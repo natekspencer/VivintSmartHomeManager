@@ -155,6 +155,7 @@ def aboutPage()
 		}
         section("Support locations")
 		{
+			href (name: "scReleaseThd", style:"embedded", title: "SmartThings Community Support Thread", url: "https://community.smartthings.com/t/release-vivintsmarthomemanager-smartthings-integration-for-vivint-smarthome-security-systems/199995")
 			href (name: "github", style:"embedded", title: "GitHub Repository Issues", url: "https://github.com/natekspencer/VivintSmartHomeManager/issues")
 		}
         section("Support the Project")
