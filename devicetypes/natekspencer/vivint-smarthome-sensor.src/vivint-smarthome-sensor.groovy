@@ -15,6 +15,7 @@
  *  CHANGE HISTORY
  *  VERSION     DATE            NOTES
  *  1.0.0       2020-07-21      Initial release
+ *  1.0.1       2020-07-22      Added equipment code
  *
  */
 
