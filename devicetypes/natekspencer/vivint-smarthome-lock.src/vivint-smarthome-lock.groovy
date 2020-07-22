@@ -18,8 +18,6 @@
  *
  */
 
-import groovy.time.TimeCategory
-
 metadata {
     definition (name: "vivint.SmartHome Lock", namespace: "natekspencer", author: "Nathan Spencer") {
         capability "Lock"

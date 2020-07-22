@@ -18,8 +18,6 @@
  *
  */
 
-import groovy.time.TimeCategory
-
 metadata {
     definition (name: "vivint.SmartHome Panel", namespace: "natekspencer", author: "Nathan Spencer") {
         capability "Actuator"

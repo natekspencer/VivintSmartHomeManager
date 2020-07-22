@@ -18,7 +18,33 @@
  *
  */
 
-import groovy.time.TimeCategory
+ /* Equipment Type (eqt)
+    CONTACT = 1;
+    EMERGENCY = 11;
+    FREEZE = 6;
+    MOTION = 2;
+    TEMPERATURE = 10;
+    WATER = 8;
+ */
+
+/*  Sensor Zone Type (set)
+    AUDIBLE_ALARM = 7;
+    AUXILIARY_ALARM = 8;
+    CARBON_MONOXIDE = 14;
+    DAY_ZONE = 5;
+    EXIT_ENTRY_1 = 1;
+    EXIT_ENTRY_2 = 2;
+    FIRE = 9;
+    FIRE_WITH_VERIFICATION = 16;
+    INTERIOR_FOLLOWER = 4;
+    INTERIOR_WITH_DELAY = 10;
+    NO_RESPONSE = 23;
+    PERIMETER = 3;
+    REPEATER = 25;
+    SILENT_ALARM = 6;
+    SILENT_BURGLARY = 24;
+    UNUSED = 0;
+ */
 
 metadata {
     definition (name: "vivint.SmartHome Sensor", namespace: "natekspencer", author: "Nathan Spencer") {
@@ -27,6 +53,8 @@ metadata {
         capability "Tamper Alert"
         capability "Refresh"
         capability "Sensor"
+
+        attribute "equipmentCode", "string"
     }
     
     preferences {
@@ -72,6 +100,9 @@ def parseEventData(Map results) {
             case "bl":
                 sendEvent(name: "battery", value: value)
                 break
+            case "ec":
+                sendEvent(name: "equipmentCode", value: getEquipmentCode(value))
+                break
             case "s":
                 sendEvent(name: "contact", value: value ? "open" : "closed")
                 break
@@ -80,4 +111,62 @@ def parseEventData(Map results) {
                 break
         }
     }
+}
+
+def getEquipmentCode(code) {
+    [
+        1254: "CARBON_MONOXIDE_DETECTOR_345_MHZ",
+        860 : "CO1_CO",
+        859 : "CO1_CO_CANADA",
+        1026: "CO3_2_GIG_CO",
+        1063: "DBELL1_2_GIG_DOORBELL",
+        862 : "DW10_THIN_DOOR_WINDOW",
+        1251: "DW11_THIN_DOOR_WINDOW",
+        863 : "DW20_RECESSED_DOOR",
+        1252: "DW21_R_RECESSED_DOOR",
+        692 : "EXISTING_CO",
+        655 : "EXISTING_DOOR_WINDOW_CONTACT",
+        556 : "EXISTING_FLOOD_TEMP",
+        475 : "EXISTING_GLASS_BREAK",
+        708 : "EXISTING_HEAT",
+        609 : "EXISTING_MOTION_DETECTOR",
+        616 : "EXISTING_SMOKE",
+        1269: "FIREFIGHTER_AUDIO_DETECTOR",
+        1061: "GARAGE01_RESOLUTION_TILT",
+        864 : "GB1_GLASS_BREAK",
+        1248: "GB2_GLASS_BREAK",
+        673 : "HW_DW_5816",
+        624 : "HW_FLOOD_SENSOR_5821",
+        519 : "HW_GLASS_BREAK_5853",
+        557 : "HW_HEAT_SENSOR_5809",
+        491 : "HW_PANIC_PENDANT_5802_MN2",
+        533 : "HW_PIR_5890",
+        530 : "HW_PIR_5894_PI",
+        470 : "HW_R_DW_5818_MNL",
+        589 : "HW_SMOKE_5808_W3",
+        0   : "OTHER",
+        867 : "PAD1_345_WIRELESS_KEYPAD",
+        868 : "PANIC1",
+        1253: "PANIC2",
+        869 : "PIR1_MOTION",
+        1249: "PIR2_MOTION",
+        1128: "RE219_FLOOD_SENSOR",
+        1144: "RE220_T_2_GIG_REPEATER",
+        1208: "RE224_DT_DSC_TRANSLATOR",
+        941 : "RE224_GT_GE_TRANSLATOR",
+        2832: "RE508_X_REPEATER",
+        2830: "RE524_X_WIRELESS_TAKEOVER",
+        2081: "REPEATER_345_MHZ",
+        1250: "SECURE_KEY_345_MHZ",
+        872 : "SMKE1_SMOKE",
+        871 : "SMKE1_SMOKE_CANADA",
+        895 : "SMKT2_GE_SMOKE_HEAT",
+        1058: "SMKT3_2_GIG",
+        1066: "SMKT6_2_GIG",
+        1264: "SWS1_SMART_WATER_SENSOR",
+        873 : "TAKE_TAKEOVER",
+        2831: "TILT_SENSOR_2_GIG_345",
+        1266: "VS_CO3_DETECTOR",
+        1267: "VS_SMKT_SMOKE_DETECTOR"
+    ][code]
 }
