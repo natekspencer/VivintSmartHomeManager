@@ -16,6 +16,7 @@
  *  VERSION     DATE            NOTES
  *  1.0.0       2020-07-21      Initial release
  *  1.0.1       2020-07-22      Added equipment code
+ *  1.0.2       2020-07-22      Set battery to 0/100 based on low battery (lb) flag if not already set
  *
  */
 
@@ -104,6 +105,9 @@ def parseEventData(Map results) {
             case "ec":
                 sendEvent(name: "equipmentCode", value: getEquipmentCode(value))
                 break
+            case "lb":
+            	setLowBattery(value)
+                break
             case "s":
                 sendEvent(name: "contact", value: value ? "open" : "closed")
                 break
@@ -112,6 +116,16 @@ def parseEventData(Map results) {
                 break
         }
     }
+}
+
+def setLowBattery(lowBattery) {
+    def battery = device.currentValue("battery") ?: 0
+    if (lowBattery && battery == 100) {
+        battery = 0
+    } else if (!lowBattery && battery == 0) {
+        battery = 100
+    }
+    sendEvent(name: "battery", value: battery)
 }
 
 def getEquipmentCode(code) {
