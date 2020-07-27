@@ -15,6 +15,7 @@
  *  CHANGE HISTORY
  *  VERSION     DATE            NOTES
  *  1.0.0       2020-07-21      Initial release
+ *  1.1.0       2020-07-26      Added lock capability to enable simple integrations with SmartThings and other systems
  *
  */
 
@@ -22,6 +23,7 @@ metadata {
     definition (name: "vivint.SmartHome Panel", namespace: "natekspencer", author: "Nathan Spencer") {
         capability "Actuator"
         capability "Health Check"
+        capability "Lock"
         capability "Power Source"
         capability "Refresh"
         capability "Security System"
@@ -35,14 +37,15 @@ metadata {
     }
     
     preferences {
+        input "defaultLockCommand", "enum", title: "Default Command When \"Lock\"-ing", options: ["away", "stay"], description: "For easability, you can send a \"lock\"/\"unlock\" command to this device. This allows for simpler commands with SmartThings and other smart home integrations such as Alexa, Google Home or Home Assistant to name a few. Panel will arm \"stay\" by default unless set here."
     }
 
     tiles(scale: 2) {
         multiAttributeTile(name: "securitySystemStatus", type: "generic", width: 6, height: 4, canChangeIcon: false) {
             tileAttribute("device.securitySystemStatus", key: "PRIMARY_CONTROL") {
-                attributeState "disarmed" , label: '${currentValue}', backgroundColor: "#12c593", icon: "st.presence.house.unlocked", defaultState: true
-                attributeState "armedStay", label: 'armed stay'     , backgroundColor: "#e76a00", icon: "st.presence.house.secured"
-                attributeState "armedAway", label: 'armed away'     , backgroundColor: "#e76a00", icon: "st.Home.home3"
+                attributeState "disarmed" , label: '${currentValue}', backgroundColor: "#12c593", icon: "st.presence.house.unlocked", action: "lock", defaultState: true
+                attributeState "armedStay", label: 'armed stay'     , backgroundColor: "#e76a00", icon: "st.presence.house.secured" , action: "disarm"
+                attributeState "armedAway", label: 'armed away'     , backgroundColor: "#e76a00", icon: "st.Home.home3"             , action: "disarm"
             }
             tileAttribute("device.messages", key: "SECONDARY_CONTROL") {
                 attributeState("messages", label:'${currentValue}', defaultState: true)
@@ -115,6 +118,17 @@ def setArmState(state, bypassAll=false) {
     runIn(4, refresh)
 }
 
+def lock() {
+    if (defaultLockCommand == "away")
+        armAway()
+    else
+        armStay()
+}
+
+def unlock() {
+    disarm()
+}
+
 def refresh() {
     parent.pollChildren()
 }
@@ -133,6 +147,7 @@ def parseEventData(Map results) {
                 break
             case "s":
                 sendEvent(name: "securitySystemStatus", value: armState(value))
+                sendEvent(name: "lock", value: !!value)
                 break
         }
     }
