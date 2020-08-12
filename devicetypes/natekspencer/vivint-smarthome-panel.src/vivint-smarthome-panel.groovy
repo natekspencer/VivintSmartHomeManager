@@ -16,6 +16,7 @@
  *  VERSION     DATE            NOTES
  *  1.0.0       2020-07-21      Initial release
  *  1.1.0       2020-07-26      Added lock capability to enable simple integrations with SmartThings and other systems
+ *  1.1.1       2020-08-12      Fixed lock value reporting
  *
  */
 
@@ -147,7 +148,7 @@ def parseEventData(Map results) {
                 break
             case "s":
                 sendEvent(name: "securitySystemStatus", value: armState(value))
-                sendEvent(name: "lock", value: !!value)
+                sendEvent(name: "lock", value: !value ? "unlocked" : "locked")
                 break
         }
     }
