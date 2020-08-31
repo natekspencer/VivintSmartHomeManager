@@ -15,6 +15,7 @@
  *  CHANGE HISTORY
  *  VERSION     DATE            NOTES
  *  1.0.0       2020-07-21      Initial release
+ *  1.0.1       2020-08-31      Report as dead battery if device has gone offline
  *
  */
 
@@ -222,7 +223,7 @@ def getDevices(children) {
                     device.s = systemData.s
                     device.messages = getSystemHealthData(systemId)
                 }
-                child.parseEventData(device)
+                child.parseEventData(standardize(device))
             } else {
                 devices.add([systemId: systemId, id: device._id, type: device.t, name: device.n])
             }
@@ -426,7 +427,7 @@ def pollChildren() {
 }
 
 def getDeviceData(systemId, deviceId) {
-    doCallout("GET", "system/${systemId}/device/${deviceId}", null).system.par[0].d[0]
+    standardize(doCallout("GET", "system/${systemId}/device/${deviceId}", null).system.par[0].d[0])
 }
 
 def dispatchCommand(systemId, deviceId, type, deviceData) {
@@ -458,4 +459,11 @@ def typeName(type) {
         "garage_door_device":"vivint.SmartHome Garage Door",
         "wireless_sensor":"vivint.SmartHome Sensor"
     ][type]
+}
+
+def standardize(device) {
+    if (device.ol != null && !device.ol && device.bl > 0) { // if device is offline, it is likely the battery is dead
+        device.bl = 0
+    }
+    device
 }
