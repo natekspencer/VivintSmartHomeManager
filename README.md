@@ -1,3 +1,5 @@
+### This project is no longer actively maintained.
+
 # VivintSmartHomeManager
 Free SmartThings integration for vivint.SmartHome
 
